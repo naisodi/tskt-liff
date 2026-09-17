@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="status">読み込み中...</div>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+var el = document.getElementById('status');
+el.innerText = 'SDK読み込み完了。init開始';
+var LIFF_ID = "2007938100-lN5KikAU";
+var done = false;
+setTimeout(function(){
+  if (!done) { el.innerText = '8秒経過。initが応答していません（ハング）'; }
+}, 8000);
+liff.init({liffId: LIFF_ID}).then(function(){
+  done = true;
+  if (!liff.isLoggedIn()) {
+    el.innerText = 'init解決。ログインしていません。LINEアプリからこのリンクを開いてください。';
+    return null;
+  }
+  el.innerText = 'init解決。ログイン済み。getProfile呼び出し中...';
+  return liff.getProfile();
+}).then(function(profile){
+  if (!profile) return;
+  el.innerText = 'userId: ' + profile.userId;
+}).catch(function(err){
+  done = true;
+  el.innerText = 'エラー: ' + (err && err.message ? err.message : err);
+});
+</script>
+</body>
+</html>
